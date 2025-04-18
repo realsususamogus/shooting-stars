@@ -1,1 +1,18 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+canvas {
+  display: block;
+}
+.mybutton {
+  font-size: 25px;
+  border-color: "yellow";
+  border-radius: 20px;
+  font-family: "Lucida Console", MONOSPACE;
+  background-image: linear-gradient(red,yellow);
+  
+  
+}
+
 
