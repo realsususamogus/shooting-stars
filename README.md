@@ -1,6 +1,7 @@
-# Y3 CEP WA1 - Stars Shoot Most Kids
+# Y3 CEP WA2 - Stars Shoot Most Kids
 Task - Create a dynamic background  
-Quite satisfised personally, but definitely could be better 
+Quite satisfised personally, but definitely could be better  
+Introduced iconic iteration naming system 
 # Features  
 - Very awesome start screen
 - Restart button  
