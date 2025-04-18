@@ -1,157 +1,128 @@
-
-//PLEASE OPEN THIS PROJECT IN FULLSCREEN (A NEW TAB)!!!!!!
-//my recommendation: the default shooting star colour is really good
-
 // Define arrays to hold stars and shooting stars
 let stars = [];
 let shootingStars = [];
 
-// Define parameters for star and shooting star customization
-let numStars = 400;
+// Define parameters for customization
+let numStars = 600;
 let maxStarSize = 10;
 let minStarSize = 1;
-let starHue = 0; // Initial hue for stars
-let maxStarBrightness = 100;
+let starHue = 0
+let maxStarBrightness = 180;
 let minStarBrightness = 20;
 let maxShootingStars = 15;
 let shootingStarSpeed = 5;
-let shootingStarSpawnRate = 0.05;
-let noiseOffset = 0;
+let noiseOffset = 0
 
-// Variables for color manipulation
-let h = 0; // Hue
-let s = 70; // Saturation
-let b = 20; // Brightness
-let tailColorHue = 244; //defined in startscreen.js
-let headColorHue = 57;
+//Other variables
+let h = 0
+let s = 70
+let b = 30
 
-// Setup the canvas and initial star generation
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  sliderWidth = windowWidth / 10 + 10;
-  background(bgpic);
-  btnstartspawn();
-  btnrestartspawn();
-  customisation();
-}
-
-function spawnstars() {
-  wpStarted = true;
-  clear();
-  btnstart.remove();
-  numStarslider.remove();
-  maxStarSizeSlider.remove();
-  minStarSizeSlider.remove();
-  maxStarBrightnessSlider.remove();
-  minStarBrightnessSlider.remove();
-  //maxShootingStarsSlider.remove();
-  //shootingStarSpeedSlider.remove();
-  //shootingStarSpawnRateSlider.remove();
-  
-
-  //maxShootingStarsSlider = createSlider(1, 100, maxShootingStars);
-  maxShootingStarsSlider.position(150, 0);
-  
-  //shootingStarSpeedSlider = createSlider(1, 25, shootingStarSpeed);
-  shootingStarSpeedSlider.position(150, 18);
-
-  //shootingStarSpawnRateSlider = createSlider(0.01, 1, shootingStarSpawnRate, 0.01);
-  shootingStarSpawnRateSlider.position(150, 36);
-  
-  headColorHueSlider.position(550, 0)
-  tailColorHueSlider.position(550, 18)
-
+  //setInterval(setBg, 2000)
+  // Generate stars
   for (let i = 0; i < numStars; i++) {
     let pos = createVector(random(width), random(height));
     let area = random(minStarSize, maxStarSize);
     let brightness = random(minStarBrightness, maxStarBrightness);
     stars.push(new Star(pos, area, brightness));
   }
+  
 }
-// Draw loop: updates and renders all objects in the scene
+
+
 function draw() {
-  slidertext();
+  //function to generate and manage background
+  setBg()
+ 
+  //function to generate shooting stars
+  genSS() 
+  h = constrain(h, -1, 361)
+  s = constrain(s, 0, 100)
+  b = constrain(b, 0, 100)
+  colorMode(HSB)
+  background(h, s, b);
+  
+  // Update and display stars
+  for (let star of stars) {
+    star.display();
+    star.update();
+  }
+  
+ 
+  // Update Perlin noise offset
+  noiseOffset += 0.01;
 
-  if (wpStarted == true) {
-    setBg(); // Update background based on user interaction
-    genSS(); // Generate and manage shooting stars
-    h = constrain(h, -1, 361);
-    s = constrain(s, 0, 100);
-    b = constrain(b, 0, 100);
-    colorMode(HSB);
-    background(h, s, b);
-
-    // Update and display stars
-    stars.forEach((star) => {
-      star.update();
-      star.display();
-    });
-
-    stroke(0);
-    textSize(15);
-    fill(255);
-    
-    //maxShootingStars = maxShootingStarsSlider.value()
-    //shootingStarSpeed = shootingStarSpeedSlider.value()
-    //shootingStarSpawnRate = shootingStarSpawnRateSlider.value()
-    text("Max Shooting Stars = " + maxShootingStars, 290, 15);
-    text("Shooting Star Speed = " + shootingStarSpeed, 290, 33);
-    text("Shooting Star Spawnrate = " + shootingStarSpawnRate, 290, 50);
-    text("SS head colour = " + headColorHue, 690, 15)
-    text("SS tail colour = " + tailColorHue, 690, 33)
-    
-    fill(headColorHueSlider.value(), 100, 80)
-    rect(525, 0, 20, 20)
-    
-    fill(tailColorHueSlider.value(), 100, 80)
-    rect(525, 18, 20, 20)
-
-    // Update and display shooting stars
-    for (let i = shootingStars.length - 1; i >= 0; i--) {
-      shootingStars[i].update();
-      shootingStars[i].display();
-      if (shootingStars[i].offScreen()) {
-        shootingStars.splice(i, 1);
-      }
+  // Update and display shooting stars
+  for (let i = shootingStars.length - 1; i >= 0; i--) {
+    shootingStars[i].update();
+    shootingStars[i].display();
+    if (shootingStars[i].offScreen()) {
+      shootingStars.splice(i, 1);
     }
   }
+  
+  text(h, 200, 200)
 }
 
-// Background hue adjustment based on mouse interaction
+
 function setBg() {
-  h = mouseIsPressed && h != 360 ? h - 3 : h + 1;
-  h = h === 360 ? 0 : h;
-  h = h < 0 ? h + 3 : h;
+  if(mouseIsPressed && h!= 360) {
+    h = h - 3
+    //g = g + 2 
+   // b = b + 1
+  } else {
+    h = h + 1
+   // g = g - 1
+   // b = b - 1
+  }
+  if (h == 360) {
+    for (let s = 0; s < 360; s++) {
+      h = h - 1
+    }
+  } 
+  if (h < 0) {
+    h = h + 3
+  }
+  
 }
 
-// Star class for creating star objects with twinkling and color changing effects
+// Star class definition
 class Star {
   constructor(pos, area, brightness) {
     this.pos = pos;
     this.area = area;
     this.brightness = brightness;
-    this.hue = starHue;
-    this.brightnessNoiseOffset = random(1000);
-    this.hueNoiseOffset = random(20);
+    this.hue = random(360);  // Start with a random hue for each star
+    this.brightnessNoiseOffset = random(1000);  // Different noise offset for brightness
+    this.hueNoiseOffset = random(1000);  // Different noise offset for hue
   }
 
   display() {
     noStroke();
     colorMode(HSB);
-    fill(this.hue, 100, this.brightness);
+    fill(this.hue, 200, this.brightness);  // Use individual hue and brightness
     ellipse(this.pos.x, this.pos.y, this.area, this.area);
   }
 
   update() {
+    // Increment noise offsets
     this.brightnessNoiseOffset += 0.05;
-    this.hueNoiseOffset += 0.009;
-    this.brightness = map(
-      noise(this.brightnessNoiseOffset), 0, 1, minStarBrightness, maxStarBrightness);
+    this.hueNoiseOffset += 0.02;  // Slower change for hue to make it smooth
+
+    // Update brightness based on noise, ensuring smooth transition
+    this.brightness = map(noise(this.brightnessNoiseOffset), 0, 1, minStarBrightness, maxStarBrightness);
+
+    // Update hue based on noise, allowing full 360 degree color range
     this.hue = map(noise(this.hueNoiseOffset), 0, 1, 0, 360);
   }
 }
 
-// ShootingStar class for creating and managing shooting stars
+
+
+
+// ShootingStar class definition
 class ShootingStar {
   constructor(pos, velocity, length, brightness) {
     this.pos = pos;
@@ -161,105 +132,52 @@ class ShootingStar {
   }
 
   update() {
-    // Update the position of the shooting star by adding the velocity
     this.pos.add(this.velocity);
   }
 
   display() {
-    // Colors for the gradient from tail to head of the shooting star
-    colorMode(HSB);
-    let tailColor = color(tailColorHue, 100, this.brightness, 0); // Fading to transparent
-    let headColor = color(headColorHue, 100, this.brightness); // Bright white at the head
-
-    push();
-    translate(this.pos.x, this.pos.y);
-
-    // Align the shooting star with its velocity vector
-    rotate(this.velocity.heading() + HALF_PI + PI);
-
-    // Draw the shooting star as a series of overlapping rectangles for a gradient effect
-    let numSegments = 20;
-    let segmentLength = this.length / numSegments;
-    let segmentWidth = 4; // Width of the shooting star
-
-    for (let i = 0; i < numSegments; i++) {
-      // Interpolate the color from tail to head
-      let interColor = lerpColor(tailColor, headColor, i / numSegments);
-      fill(interColor);
+  // Draw fading trail
+  let trailLength = 40;  // Adjust the length of the trail as needed
+  let initialTrailSize = 4;  // Start size of the trail ellipses
+  let trailColor = color(255, 255, 255);  // Adjust the trail color as needed
+  
+  for (let i = 0; i < trailLength; i++) {
+      let trailPositionX = this.pos.x - this.velocity.x * i;
+      let trailPositionY = this.pos.y - this.velocity.y * i;
+      let alpha = 255 * pow(0.9, i);  // Use exponential decay for alpha
+      let trailSize = initialTrailSize * pow(0.95, i);  // Decrease size exponentially
+      fill(red(trailColor), green(trailColor), blue(trailColor), alpha);
       noStroke();
-
-      // Draw each segment, uses elipses and rectangles to make it look smoother at different lengths
-      if (segmentLength < 7) {
-        ellipse(
-          -segmentWidth / 2,segmentLength * (i - numSegments),segmentWidth,
-          segmentLength);
-      } else {
-        rect(
-          -segmentWidth / 2,segmentLength * (i - numSegments),segmentWidth,
-          segmentLength, 5); 
-      }
-    }
-
-    pop();
+      ellipse(trailPositionX, trailPositionY, trailSize, trailSize);
   }
 
+  // Draw the shooting star
+  strokeWeight(5);
+  stroke(random(100), random(360), random(360), this.brightness);
+  line(this.pos.x, this.pos.y, this.pos.x + this.velocity.x * this.length, this.pos.y + this.velocity.y * this.length);
+}
+
+
+
   offScreen() {
-    // Consider the shooting star off-screen if it moves beyond a buffer area around the canvas
-    let screenBuffer = this.length - 15; // Buffer zone
-    return (
-      this.pos.x < -screenBuffer ||
-      this.pos.x > width + screenBuffer ||
-      this.pos.y < -screenBuffer ||
-      this.pos.y > height + screenBuffer
-    );
+    return (this.pos.x < 0 || this.pos.x > width || this.pos.y < 0 || this.pos.y > height);
   }
 }
 
-//function to handle the generation of shooting stars
 function genSS() {
-  if (shootingStars.length < maxShootingStars && random() < shootingStarSpawnRate) {
-    // Choose a random edge by selecting a random number between 0 and 3
-    let edge = floor(random(4)); 
-    let startX, startY, angle;
-
-    switch (edge) {
-      case 0: // Top edge
-        startX = random(width);
-        startY = 0;
-        angle = random(PI / 4, (3 * PI) / 4); // Angle to go downwards
-        break;
-      case 1: // Right edge
-        startX = width;
-        startY = random(height);
-        angle = random((5 * PI) / 4, (7 * PI) / 4); // Angle to go left
-        break;
-      case 2: // Bottom edge
-        startX = random(width);
-        startY = height;
-        angle = random((5 * PI) / 4, (7 * PI) / 4); // Angle to go upwards
-        break;
-      case 3: // Left edge
-        startX = 0;
-        startY = random(height);
-        angle = random(PI / 4, (3 * PI) / 4); // Angle to go right
-        break;
-    }
-    //Setting the variables for each shooting star
-    let length = random(100, 400);
+  // Generate shooting stars
+  if (shootingStars.length < maxShootingStars && random() < 0.05) { // Adjust the probability to control frequency
+    let startX = random(width);
+    let startY = random(height);
+    let angle = random(TWO_PI); // Use random angle
+    let length = random(20, 120); // Shorter range for length
+    let endX = startX + cos(angle) * length; // Use angle to calculate end position
+    let endY = startY + sin(angle) * length; // Use angle to calculate end position
     let brightness = random(minStarBrightness, maxStarBrightness);
-    let velocity = createVector(
-      cos(angle) * shootingStarSpeed,
-      sin(angle) * shootingStarSpeed
-    );
-    //Creating the shooting star based on the above set variables
-    shootingStars.push(
-      new ShootingStar(
-        createVector(startX, startY),
-        velocity,
-        length,
-        brightness
-      )
-    );
+    
+    let velocity = createVector(cos(angle) * shootingStarSpeed, sin(angle) * shootingStarSpeed);
+    shootingStars.push(new ShootingStar(createVector(startX, startY), velocity, length, brightness));
   }
+  
 }
 
