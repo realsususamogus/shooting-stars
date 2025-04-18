@@ -1,4 +1,4 @@
-# Y3 CEP WA1 - Shooting stars  
+# Y3 CEP WA1 - Stars Shoot Most Kids
 Task - Create a dynamic background  
 Quite satisfised personally, but definitely could be better 
 # Features  
